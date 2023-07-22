@@ -1,0 +1,44 @@
+.navbar {
+  position: relative;
+  overflow: hidden;
+  background-color: #333;
+  width: 200px;
+  height: 138px;
+}
+
+.navbar a {
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  /* border: 1px solid #f2f2f2; */
+  width: 80px;
+  height: 40px;
+  position: absolute;
+}
+
+.navbar a:nth-child(1) {  /* Home */
+  top: 0;
+  left: 0;
+}
+
+.navbar a:nth-child(2) {  /* Home 2 */
+  top: 0;
+  left: 100px;
+}
+
+.navbar a:nth-child(3) {  /* Drill Down 2 */
+  top: 70px;
+  left: 100px;
+}
+
+.navbar a:nth-child(4) {  /* Drill Down 1 */
+  top: 70px;
+  left: 0;
+}
+
+.navbar a:hover {
+  background: #ddd;
+  color: black;
+}

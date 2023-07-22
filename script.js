@@ -3,24 +3,24 @@ let data; // Global variable to store the original data
 async function init() {
   // Load data from NYC-Airbnb-2023.csv
   data = await d3.csv("./NYC-Airbnb-2023.csv");
-  updateGraph(data, false); // Initial graph with all data
+
+  // Count the occurrences of each unique countProp and compute total price
+  var counts = {}, totalPrices = {};
+  data.forEach(function(d) {
+    var prop = d["neighbourhood_group"];
+    counts[prop] = (counts[prop] || 0) + 1;
+    totalPrices[prop] = (totalPrices[prop] || 0) + +d["price"];  // Convert to number using unary plus operator
+  });
+
+  // Convert the counts object into an array of objects and compute average price
+  var data = Object.keys(counts).map(function(key) {
+    return { key: key, count: counts[key], averagePrice: totalPrices[key] / counts[key] };
+  });
+
+  updateGraph(data); // Initial graph with all data
 }
 
-function updateGraph(filteredData, isDrillDown) {
-  // Variable to hold the property we are counting
-  var countProp = isDrillDown ? "neighbourhood" : "neighbourhood_group";
-  
-  // Count the occurrences of each unique countProp
-  var counts = {};
-  filteredData.forEach(function(d) {
-    var prop = d[countProp];
-    counts[prop] = (counts[prop] || 0) + 1;
-  });
-
-  // Convert the counts object into an array of objects
-  var data = Object.keys(counts).map(function(key) {
-    return { key: key, count: counts[key] };
-  });
+function updateGraph(data) {
 
   var svg = d3.select("svg");
   svg.selectAll("*").remove(); // Clear the previous graph
@@ -29,7 +29,12 @@ function updateGraph(filteredData, isDrillDown) {
   var width = +svg.attr("width") - margin.left - margin.right;
   var height = +svg.attr("height") - margin.top - margin.bottom;
   var radius = Math.min(width, height) / 2;
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  // Get the minimum and maximum avg prices
+  var priceExtent = d3.extent(data, function(d) { return d.averagePrice; });
+
+  var color = d3.scaleSequential()
+    .domain(priceExtent)  // Set the domain of the color scale to the minimum and maximum average prices
+    .interpolator(d3.interpolateRgb("darkgreen", "maroon"));  // Interpolate between maroon and dark green
 
   var arc = d3.arc()
     .outerRadius(radius - 10)
@@ -55,13 +60,12 @@ function updateGraph(filteredData, isDrillDown) {
 
     arcs.append("path")
     .attr("d", arc)
-    .attr("fill", function(d) { return color(d.data.key); })
+    .attr("fill", function(d) { return color(d.data.averagePrice); })  // Set color based on average price
     .on("click", function(d) {
-      if (!isDrillDown) {
-        var clickedGroup = d.data.key;
-        window.location.href = "drilled-down-1.html?neighbourhood_group=" + encodeURIComponent(clickedGroup);
-      }
+      var clickedGroup = d.data.key;
+      window.location.href = "drilled-down-1.html?neighbourhood_group=" + encodeURIComponent(clickedGroup);
     });
+  
   
   arcs.append("text")
     .attr("transform", function(d) {
@@ -88,12 +92,52 @@ function updateGraph(filteredData, isDrillDown) {
     return (angle < 180) ? "start" : "end";  // Right-justify text for left half of pie
   }
 
-  // arcs.append("line") // Line from pie slice to label
-  //   .attr("stroke", "black")
-  //   .attr("x1", function(d) { return arc.centroid(d)[0]; })
-  //   .attr("y1", function(d) { return arc.centroid(d)[1]; })
-  //   .attr("x2", function(d) { return labelArc.centroid(d)[0]; })
-  //   .attr("y2", function(d) { return labelArc.centroid(d)[1]; });
+  // legend
+  // Define the gradient for the legend
+  var defs = svg.append("defs");
+
+  var linearGradient = defs.append("linearGradient")
+    .attr("id", "linear-gradient");
+
+  // Create the stops of the linear gradient
+  linearGradient.selectAll("stop") 
+    .data(color.ticks().map((t, i, n) => ({offset: `${100*i/n.length}%`, color: color(t)})))
+    .enter().append("stop")
+    .attr("offset", d => d.offset)
+    .attr("stop-color", d => d.color);
+
+    // Append a group for the legend
+  var legend = svg.append("g")
+    .attr("transform", `translate(${width}, 0)`);  // Position the legend in the top right
+
+  // Append a rectangle for the legend color guide
+  legend.append("rect")
+    .attr("width", height)
+    .attr("height", 20)
+    .style("fill", "url(#linear-gradient)");
+  // Define the annotation
+  priceExtent[0] = Math.round(priceExtent[0]);
+  priceExtent[1] = Math.round(priceExtent[1]);
+
+  const annotations = [{
+    note: {
+      title: "Count Scale",
+      label: "average per-night cost from $" + priceExtent[0] + " to $" + priceExtent[1] + "."
+    },
+    x: width,  // Position the annotation to the top right of the legend
+    y: 0,  
+    dy: 40,
+    dx: 0
+  }];
+
+  // Add the annotation to the SVG
+  svg.append("g")
+    .attr("class", "annotation-group")
+    // .attr("transform", "translate(0," + (margin.top / 2) + ")")  // Adjust transform
+    .call(d3.annotation().annotations(annotations));
+
+  // legend
+
 }
 
 init();

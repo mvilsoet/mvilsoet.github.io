@@ -6,53 +6,99 @@ async function init() {
   const neighbourhoodGroup = urlParams.get('neighbourhood_group');
 
   // Load data from NYC-Airbnb-2023.csv
-  data = await d3.csv("./NYC-Airbnb-2023.csv");
-
-  // Count the occurrences of each neighbourhood
-  var neighbourhoodCounts = {};
-  data.forEach(function(d) {
-    var neighbourhood = d.neighbourhood;
-    neighbourhoodCounts[neighbourhood] = (neighbourhoodCounts[neighbourhood] || 0) + 1;
-  });
-
-  // Replace the neighbourhood value for those with less than 1000 entries
-  data.forEach(function(d) {
-    if (neighbourhoodCounts[d.neighbourhood] < 200) {
-      d.neighbourhood = "Other";
-    }
-  });
+  let rawData = await d3.csv("./NYC-Airbnb-2023.csv");
 
   // Filter the data based on the 'neighbourhood_group'
-  const filteredData = data.filter(d => d.neighbourhood_group === neighbourhoodGroup);
+  let filteredData = rawData.filter(d => d.neighbourhood_group === neighbourhoodGroup);
 
-  updateGraph(filteredData, true);
-}
-
-
-function updateGraph(filteredData, isDrillDown) {
-  // Variable to hold the property we are counting
-  var countProp = isDrillDown ? "neighbourhood" : "neighbourhood_group";
-  
-  // Count the occurrences of each unique countProp
+  // Count the occurrences of each neighbourhood and calculate total price
   var counts = {};
+  var totalPrices = {};
   filteredData.forEach(function(d) {
-    var prop = d[countProp];
-    counts[prop] = (counts[prop] || 0) + 1;
+    var neighbourhood = d.neighbourhood;
+    counts[neighbourhood] = (counts[neighbourhood] || 0) + 1;
+    totalPrices[neighbourhood] = (totalPrices[neighbourhood] || 0) + parseFloat(d.price);
   });
 
   // Convert the counts object into an array of objects
+  // Replace the neighbourhood value for those with less than 1000 entries
+// Group the neighbourhoods with less than 1000 entries into "Other"
+  for (let key in counts) {
+    if (counts[key] < 50) {
+      counts["Other"] = (counts["Other"] || 0) + counts[key];
+      totalPrices["Other"] = (totalPrices["Other"] || 0) + totalPrices[key];
+      delete counts[key];
+      delete totalPrices[key];
+    }
+  }
+
+  // Create the data array
   var data = Object.keys(counts).map(function(key) {
-    return { key: key, count: counts[key] };
+    var averagePrice = totalPrices[key] / counts[key];
+    return { key: key, count: counts[key], averagePrice: averagePrice };
   });
+
+  updateGraph(data);
+}
+
+
+function updateGraph(filteredData) {
+  // Variable to hold the property we are counting
+  var data = filteredData;
 
   var svg = d3.select("svg");
   svg.selectAll("*").remove(); // Clear the previous graph
 
-  var margin = {top: 150, right: 150, bottom: 150, left: 150}; // Define margins
+  var margin = {top: 150, right: 150, bottom: 150, left: 70}; // Define margins
   var width = +svg.attr("width") - margin.left - margin.right;
   var height = +svg.attr("height") - margin.top - margin.bottom;
   var radius = Math.min(width, height) / 2;
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  // Get the minimum and maximum average prices
+  var priceExtent = d3.extent(filteredData, function(d) { return d.averagePrice; });
+
+  var color = d3.scaleSequential()
+    .domain(priceExtent)  // Set the domain of the color scale to the minimum and maximum average prices
+    .interpolator(d3.interpolateRgb("green", "red"));  // Interpolate between green and red
+
+  // legend
+  var defs = svg.append("defs");
+
+  var linearGradient = defs.append("linearGradient")
+    .attr("id", "linear-gradient");
+
+  linearGradient.selectAll("stop") 
+    .data(color.ticks().map((t, i, n) => ({offset: `${100*i/n.length}%`, color: color(t)})))
+    .enter().append("stop")
+    .attr("offset", d => d.offset)
+    .attr("stop-color", d => d.color);
+
+  svg.append("g")
+    .attr("transform", `translate(${width}, 0)`)  // Position the legend to the right
+    .append("rect")
+    // .attr('transform', 'rotate(90)')
+    .attr("width", height)
+    .attr("height", 20)
+    .style("fill", "url(#linear-gradient)");
+
+  // Define the annotation
+  priceExtent[0] = Math.round(priceExtent[0]);
+  priceExtent[1] = Math.round(priceExtent[1]);
+
+  const annotations = [{
+    note: {
+      title: "Color Scale",
+      label: "per-night neighborhood prices from $" + priceExtent[0] + " to $" + priceExtent[1] + "."
+    },
+    x: width + 20,  // Position the annotation to the right of the legend
+    y: 20,  // Position the annotation above the legend
+    dy: 40,
+    dx: 0
+  }];  
+  
+  svg.append("g")
+    .attr("class", "annotation-group")
+    .call(d3.annotation().annotations(annotations));  
+  // legend
 
   var arc = d3.arc()
     .outerRadius(radius - 10)
@@ -78,7 +124,7 @@ function updateGraph(filteredData, isDrillDown) {
 
   arcs.append("path")
     .attr("d", arc)
-    .attr("fill", function(d) { return color(d.data.key); });
+    .attr("fill", function(d) { return color(d.data.averagePrice); });
 
   arcs.append("text")
     .attr("transform", function(d) {
@@ -104,14 +150,6 @@ function updateGraph(filteredData, isDrillDown) {
     var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  // Compute angle in degrees
     return (angle < 180) ? "start" : "end";  // Right-justify text for left half of pie
   }
-  
-  
-  // arcs.append("line") // Line from pie slice to label
-  //   .attr("stroke", "black")
-  //   .attr("x1", function(d) { return arc.centroid(d)[0]; })
-  //   .attr("y1", function(d) { return arc.centroid(d)[1]; })
-  //   .attr("x2", function(d) { return labelArc.centroid(d)[0]; })
-  //   .attr("y2", function(d) { return labelArc.centroid(d)[1]; });
 }
 
 init();
