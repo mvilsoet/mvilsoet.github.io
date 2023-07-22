@@ -156,6 +156,51 @@ function updateGraph(data) {
     .call(d3.annotation().annotations(annotations));
 
   // legend
+// Find the data for Queens
+var queensData = arcData.find(function(d) { return d.data.key === "Queens"; });
+
+// Create the annotation for Queens
+if (queensData) {  // Ensure queensData is defined
+  const queensAnnotation = {
+    note: {
+      title: "No Tourists.",
+      label: "On average, month-long stays in Queens are more expenive than week-long.",
+    },
+    x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Queens slice
+    y: labelArc.centroid(queensData)[1] + height / 2 + margin.top,  // Position the annotation at the centroid of the Queens slice
+    dy: -20,
+    dx: -40
+  };
+  annotations.push(queensAnnotation);
+}
+
+// Add the annotations to the SVG
+svg.append("g")
+  .attr("class", "annotation-group")
+  .call(d3.annotation().annotations(annotations));
+  
+// Find the data for Brooklyn
+var brooklynData = arcData.find(function(d) { return d.data.key === "Brooklyn"; });
+
+// Create the annotation for Brooklyn
+if (brooklynData) {  // Ensure brooklynData is defined
+  const brooklynAnnotation = {
+    note: {
+      title: "Like Renting",
+      label: "Average studio apt rent here: $3,250.",
+    },
+    x: labelArc.centroid(brooklynData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Brooklyn slice
+    y: labelArc.centroid(brooklynData)[1] + height / 2 + margin.top,  // Position the annotation at the centroid of the Brooklyn slice
+    dy: 40,
+    dx: 15
+  };
+  annotations.push(brooklynAnnotation);
+}
+
+// Add the annotations to the SVG
+svg.append("g")
+  .attr("class", "annotation-group")
+  .call(d3.annotation().annotations(annotations));
 
 }
 

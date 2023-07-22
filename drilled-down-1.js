@@ -168,6 +168,30 @@ function updateGraph(filteredData) {
     var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  // Compute angle in degrees
     return (angle < 180) ? "start" : "end";  // Right-justify text for left half of pie
   }
+
+// Find the data for Laurelton
+var laureltonData = arcData.find(function(d) { return d.data.key === "Laurelton"; });
+
+// Create the annotation for Laurelton
+if (laureltonData) {  // Ensure laureltonData is defined
+  const laureltonAnnotation = {
+    note: {
+      title: "Laurel-TONS of money",
+      label: "Average annual household income here is $115,722.",
+    },
+    x: labelArc.centroid(laureltonData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Laurelton slice
+    y: labelArc.centroid(laureltonData)[1] + height / 2 + margin.top,  // Position the annotation at the centroid of the Laurelton slice
+    dy: -80,
+    dx: -5
+  };
+  annotations.push(laureltonAnnotation);
+}
+
+// Add the annotations to the SVG
+svg.append("g")
+  .attr("class", "annotation-group")
+  .call(d3.annotation().annotations(annotations));
+
 }
 
 init();

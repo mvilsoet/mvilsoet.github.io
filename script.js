@@ -157,6 +157,29 @@ function updateGraph(data) {
     // .attr("transform", "translate(0," + (margin.top / 2) + ")")  // Adjust transform
     .call(d3.annotation().annotations(annotations));
 
+    // Find the data for Queens
+var queensData = arcData.find(function(d) { return d.data.key === "Queens"; });
+
+// Create the annotation for Queens
+if (queensData) {  // Ensure queensData is defined
+  const queensAnnotation = {
+    note: {
+      title: "Beat the average!",
+      label: "The avg hotel price in NYC is $175.",
+    },
+    x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Queens slice
+    y: labelArc.centroid(queensData)[1] + height / 2 + margin.top,  // Position the annotation at the centroid of the Queens slice
+    dy: 50,
+    dx: -20
+  };
+  annotations.push(queensAnnotation);
+}
+
+// Add the annotations to the SVG
+svg.append("g")
+  .attr("class", "annotation-group")
+  .call(d3.annotation().annotations(annotations));
+
   // legend
 
 }
