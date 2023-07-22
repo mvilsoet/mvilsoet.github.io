@@ -1,8 +1,16 @@
+#tooltip {
+  position: absolute;
+  opacity: 0;
+  border: 1px solid black;
+  padding: 10px;
+  background-color: white;
+}
+
 .navbar {
   position: relative;
   overflow: hidden;
   background-color: #333;
-  width: 200px;
+  width: 330px;
   height: 138px;
 }
 
@@ -18,24 +26,38 @@
   position: absolute;
 }
 
+.navbar a.current {
+  background-color: #555; /* Darker background for current page */
+  color: white; /* White text for current page */
+}
+
+.navbar a.disable-click {
+  cursor: not-allowed; /* Change the cursor on hover */
+}
+
 .navbar a:nth-child(1) {  /* Home */
   top: 0;
   left: 0;
 }
 
-.navbar a:nth-child(2) {  /* Home 2 */
-  top: 0;
-  left: 100px;
-}
-
-.navbar a:nth-child(3) {  /* Drill Down 2 */
-  top: 70px;
-  left: 100px;
-}
-
-.navbar a:nth-child(4) {  /* Drill Down 1 */
+.navbar a:nth-child(2) {  /* Drill Down 1 */
   top: 70px;
   left: 0;
+}
+
+.navbar a:nth-child(3) {  /* Home 2 */
+  top: 0;
+  left: 110px;
+}
+
+.navbar a:nth-child(4) {  /* Drill Down 2 */
+  top: 70px;
+  left: 110px;
+}
+
+.navbar a:nth-child(5) {  /* Home 3 */
+  top: 40px;
+  left: 220px;
 }
 
 .navbar a:hover {

@@ -1,12 +1,13 @@
 let data; // Global variable to store the original data
+let total; // Global variable to store total count
 
 async function init() {
   // Load data from NYC-Airbnb-2023.csv
   data = await d3.csv("./NYC-Airbnb-2023.csv");
 
-  // Filter the data to include only rows with minimum_nights less than 8
+  // Filter the data to include only rows with minimum_nights greater than 30
   data = data.filter(function(d) {
-    return +d["minimum_nights"] < 8;  // Convert to number using unary plus operator
+    return +d["minimum_nights"] > 30;  // Convert to number using unary plus operator
   });
 
   // Count the occurrences of each unique countProp and compute total price
@@ -17,20 +18,17 @@ async function init() {
     totalPrices[prop] = (totalPrices[prop] || 0) + +d["price"];  // Convert to number using unary plus operator
   });
 
-  // Compute the total count
-  var totalCount = d3.sum(Object.values(counts));
+  total = Object.values(counts).reduce((a, b) => a + b, 0); // Calculate total count
 
-  // Convert the counts object into an array of objects and compute average price and percentage
+  // Convert the counts object into an array of objects and compute average price
   var data = Object.keys(counts).map(function(key) {
-    var count = counts[key];
-    return { key: key, count: count, averagePrice: totalPrices[key] / count, percentage: (count / totalCount) * 100 };
+    return { key: key, count: counts[key], averagePrice: totalPrices[key] / counts[key] };
   });
 
   updateGraph(data); // Initial graph with all data
 }
 
 function updateGraph(data) {
-
   var svg = d3.select("svg");
   svg.selectAll("*").remove(); // Clear the previous graph
 
@@ -76,18 +74,18 @@ function updateGraph(data) {
       tooltip.style("opacity", 1)
         .html("<strong>" + d.data.key + "</strong><br><strong>Average nightly price:</strong> $" 
               + d.data.averagePrice.toFixed(2) + "<br><strong>Percentage of total listings:</strong> " 
-              + d.data.percentage.toFixed(2) + "%<br><i>Click to drill down</i>")
-        .style("left", (d3.event.pageX) + "px")
+              + (d.data.count / total * 100).toFixed(2) + "%<br><i>Click to drill down</i>")
+        .style("left", (d3.event.pageX + 10) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
-    })    
+    })
     .on("mouseout", function(d) {  // Hide tooltip on mouseout
       tooltip.style("opacity", 0);
     })
     .on("click", function(d) {
       var clickedGroup = d.data.key;
-      window.location.href = "drilled-down-1.html?neighbourhood_group=" + encodeURIComponent(clickedGroup);
+      window.location.href = "drilled-down-2.html?neighbourhood_group=" + encodeURIComponent(clickedGroup);
     });
-
+  
   arcs.append("text")
     .attr("transform", function(d) {
       var c = labelArc.centroid(d);
@@ -143,7 +141,7 @@ function updateGraph(data) {
   const annotations = [{
     note: {
       title: "$" + priceExtent[0] + " to $" + priceExtent[1] + "",
-      label: "average per-night cost"    
+      label: "average per-night cost"
     },
     x: width,  // Position the annotation to the top right of the legend
     y: 0,  

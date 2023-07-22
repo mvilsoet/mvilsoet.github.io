@@ -6,11 +6,11 @@
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <h1 id="header">Number and Cost of Airbnb Listings in NYC ( week-long or less )</h1> 
+  <h1 id="header">Number and Cost of Airbnb Listings in NYC ( stays longer than a month )</h1>
   <p> data from kaggle: "New York City Airbnb 2023, Public Data" updated for 01/11 - 07/23</p>
   <svg width="700" height="700"></svg>
-  <script src="drilled-down-1.js"></script>
-  <script src="script.js"></script>
+  <script src="drilled-down-2.js"></script>
+  <script src="script-2.js"></script>
 </body>
 
 <div id="tooltip"></div>
@@ -18,10 +18,10 @@
 <body>
   <div class="navbar">
     <a href="index.html" class="">Home</a>
-    <a href="drilled-down-1.html" class="drilldown1 disable-click current">Drill Down 1</a>
+    <a href="drilled-down-1.html" class="drilldown1 disable-click">Drill Down 1</a>
   
     <a href="index-2.html" class="">Home 2</a>
-    <a href="drilled-down-2.html" class="drilldown2 disable-click">Drill Down 2</a>
+    <a href="drilled-down-2.html" class="drilldown2 disable-click current">Drill Down 2</a>
   
     <a href="index-3.html" class="home3">Home 3</a>
   </div>
@@ -42,7 +42,7 @@
     const neighbourhoodGroup = urlParams.get('neighbourhood_group');
 
     // Change the header text
-    document.getElementById('header').innerText = 'Number and Cost of Airbnb Listings in ' + neighbourhoodGroup + ' ( week-long or less )';
+    document.getElementById('header').innerText = 'Number and Cost of Airbnb Listings in ' + neighbourhoodGroup + ' ( stays longer than a month )';
   </script>
 
 </html>

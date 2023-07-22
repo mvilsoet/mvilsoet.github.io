@@ -1,4 +1,5 @@
 let data; // Global variable to store the original data
+let total; // Global variable to store total count
 
 async function init() {
   // Get the 'neighbourhood_group' from the URL
@@ -11,10 +12,6 @@ async function init() {
   // Filter the data based on the 'neighbourhood_group'
   let filteredData = rawData.filter(d => d.neighbourhood_group === neighbourhoodGroup);
 
-  // Filter the data to include only rows with minimum_nights less than 8
-  filteredData = filteredData.filter(function(d) {
-    return +d["minimum_nights"] < 8;  // Convert to number using unary plus operator
-  });
   // Count the occurrences of each neighbourhood and calculate total price
   var counts = {};
   var totalPrices = {};
@@ -24,8 +21,11 @@ async function init() {
     totalPrices[neighbourhood] = (totalPrices[neighbourhood] || 0) + parseFloat(d.price);
   });
 
+  total = Object.values(counts).reduce((a, b) => a + b, 0); // Calculate total count
+
   // Convert the counts object into an array of objects
   // Replace the neighbourhood value for those with less than 1000 entries
+// Group the neighbourhoods with less than 1000 entries into "Other"
   for (let key in counts) {
     if (counts[key] < 50) {
       counts["Other"] = (counts["Other"] || 0) + counts[key];
@@ -48,8 +48,6 @@ async function init() {
 function updateGraph(filteredData) {
   // Variable to hold the property we are counting
   var data = filteredData;
-  var tooltip = d3.select("#tooltip");
-  var total = d3.sum(filteredData, function(d) { return d.count; });
 
   var svg = d3.select("svg");
   svg.selectAll("*").remove(); // Clear the previous graph
@@ -127,20 +125,20 @@ function updateGraph(filteredData) {
     .enter().append("g")
     .attr("class", "arc");
 
+  var tooltip = d3.select("#tooltip");
+
   arcs.append("path")
     .attr("d", arc)
-    .attr("fill", function(d) { return color(d.data.averagePrice); })
-    .on("mouseover", function(d) {
-      tooltip.style("opacity", 1);
-      tooltip.html("<strong>" + d.data.key + "</strong><br><strong>Average nightly price:</strong> $" 
-                   + d.data.averagePrice.toFixed(2) + "<br><strong>Percentage of total listings:</strong> " 
-                   + (d.data.count / total * 100).toFixed(2) + "%");
+    .attr("fill", function(d) { return color(d.data.averagePrice); })  // Set color based on average price
+    .on("mouseover", function(d) {  // Show tooltip on mouseover
+      tooltip.style("opacity", 1)
+        .html("<strong>" + d.data.key + "</strong><br><strong>Average nightly price:</strong> $" 
+              + d.data.averagePrice.toFixed(2) + "<br><strong>Percentage of total listings:</strong> " 
+              + (d.data.count / total * 100).toFixed(2) + "%")
+        .style("left", (d3.event.pageX + 10) + "px")
+        .style("top", (d3.event.pageY - 28) + "px");
     })
-    .on("mousemove", function(d) {
-      tooltip.style("left", (d3.event.pageX + 10) + "px")
-             .style("top", (d3.event.pageY - 10) + "px");
-    })
-    .on("mouseout", function(d) {
+    .on("mouseout", function(d) {  // Hide tooltip on mouseout
       tooltip.style("opacity", 0);
     });
 
