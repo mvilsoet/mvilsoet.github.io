@@ -7,43 +7,44 @@
 </head>
 <body>
   <h1 id="header">Number and Cost of Airbnb Listings in NYC ( stays longer than a month )</h1>
-  <p> data from kaggle: "New York City Airbnb 2023, Public Data" updated for 01/15 - 07/23</p>
+  <p> Filter by room type: 
+    <select id="room-type-select">
+      <option value="both">All room types</option>
+      <option value="Private room">Private room</option>
+      <option value="Entire home/apt">Entire home/apt</option>
+    </select> 
+  </p>
   <div class="svg-container">
     <button class="next_slide" onclick="window.location.href='index-3.html'">Next Slide [2/3]</button>
     <svg width="700" height="700"></svg>
   </div>  
   <script src="drilled-down-2.js"></script>
 </body>
-
+<p style="font-size: 12px;">data from kaggle: "New York City Airbnb 2023, Public Data" updated for 2014 - 2023</p>
 <div id="tooltip"></div>
 
 <body>
   <div class="navbar">
-    <a href="index.html" class="">Home</a>
+    <a href="index.html" class="">Slide 1</a>
     <a href="drilled-down-1.html" class="drilldown1 disable-click">Drill Down 1</a>
   
-    <a href="index-2.html" class="">Home 2</a>
+    <a href="index-2.html" class="">Slide 2</a>
     <a href="drilled-down-2.html" class="drilldown2 disable-click current">Drill Down 2</a>
   
-    <a href="index-3.html" class="home3">Home 3</a>
+    <a href="index-3.html" class="home3">Slide 3</a>
   </div>
 
   <script>
-    // Get all elements with class="disable-click" and loop over them
+    // Disable click on all links with class="disable-click"
     var disableClickLinks = document.querySelectorAll('.disable-click');
     for (var i = 0; i < disableClickLinks.length; i++) {
-      // Add an event listener to each link
       disableClickLinks[i].addEventListener('click', function(event) {
-        // Prevent the default click action
         event.preventDefault();
       });
     }
-
-    // Get the 'neighbourhood_group' from the URL
     const urlParams = new URLSearchParams(window.location.search);
     const neighbourhoodGroup = urlParams.get('neighbourhood_group');
 
-    // Change the header text
     document.getElementById('header').innerText = 'Number and Cost of Airbnb Listings in ' + neighbourhoodGroup + ' ( stays longer than a month )';
   </script>
 

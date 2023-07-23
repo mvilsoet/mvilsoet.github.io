@@ -7,7 +7,13 @@
 </head>
 <body>
   <h1>Number and Cost of Airbnb Listings in NYC ( week-long or less )</h1> 
-  <p> data from kaggle: "New York City Airbnb 2023, Public Data" updated for 05/11 - 07/23</p>
+  <p> Filter by room type: 
+    <select id="room-type-select">
+      <option value="both">All room types</option>
+      <option value="Private room">Private room</option>
+      <option value="Entire home/apt">Entire home/apt</option>
+    </select> 
+  </p>
   <div class="svg-container">
     <button class="next_slide" onclick="window.location.href='index-2.html'">Next Slide [1/3]</button>
     <svg width="700" height="700"></svg>
@@ -15,16 +21,17 @@
   <script src="script.js"></script>
 </body>
 
+<p style="font-size: 12px;">data from kaggle: "New York City Airbnb 2023, Public Data" updated for 2014 - 2023</p>
 <div id="tooltip"></div>
 
 <div class="navbar">
-  <a href="index.html" class="current">Home</a>
+  <a href="index.html" class="current">Slide 1</a>
   <a href="drilled-down-1.html" class="drilldown1 disable-click">Drill Down 1</a>
 
-  <a href="index-2.html" class="">Home 2</a>
+  <a href="index-2.html" class="">Slide 2</a>
   <a href="drilled-down-2.html" class="drilldown2 disable-click">Drill Down 2</a>
 
-  <a href="index-3.html" class="home3">Home 3</a>
+  <a href="index-3.html" class="home3">Slide 3</a>
 </div>
 
 <script>

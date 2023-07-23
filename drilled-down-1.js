@@ -1,20 +1,23 @@
 let data; // Global variable to store the original data
 
-async function init() {
-  // Get the 'neighbourhood_group' from the URL
+async function init(roomType="both") {
   const urlParams = new URLSearchParams(window.location.search);
   const neighbourhoodGroup = urlParams.get('neighbourhood_group');
 
-  // Load data from NYC-Airbnb-2023.csv
   let rawData = await d3.csv("./NYC-Airbnb-2023.csv");
 
-  // Filter the data based on the 'neighbourhood_group'
   let filteredData = rawData.filter(d => d.neighbourhood_group === neighbourhoodGroup);
 
-  // Filter the data to include only rows with minimum_nights less than 8
   filteredData = filteredData.filter(function(d) {
-    return +d["minimum_nights"] < 8;  // Convert to number using unary plus operator
+    return +d["minimum_nights"] < 8;
   });
+
+  if (roomType !== "both") {
+    filteredData = filteredData.filter(function(d) {
+      return d.room_type === roomType;
+    });
+  }
+
   // Count the occurrences of each neighbourhood and calculate total price
   var counts = {};
   var totalPrices = {};
@@ -24,8 +27,8 @@ async function init() {
     totalPrices[neighbourhood] = (totalPrices[neighbourhood] || 0) + parseFloat(d.price);
   });
 
-  // Convert the counts object into an array of objects
-  // Replace the neighbourhood value for those with less than 1000 entries
+  // 1) Convert the counts object into an array of objects
+  // 2) Replace the neighbourhood value for those with less than 1000 entries
   for (let key in counts) {
     if (counts[key] < 50) {
       counts["Other"] = (counts["Other"] || 0) + counts[key];
@@ -46,7 +49,6 @@ async function init() {
 
 
 function updateGraph(filteredData) {
-  // Variable to hold the property we are counting
   var data = filteredData;
   var tooltip = d3.select("#tooltip");
   var total = d3.sum(filteredData, function(d) { return d.count; });
@@ -54,18 +56,18 @@ function updateGraph(filteredData) {
   var svg = d3.select("svg");
   svg.selectAll("*").remove(); // Clear the previous graph
 
-  var margin = {top: 150, right: 150, bottom: 150, left: 70}; // Define margins
+  var margin = {top: 150, right: 150, bottom: 150, left: 70}; 
   var width = +svg.attr("width") - margin.left - margin.right;
   var height = +svg.attr("height") - margin.top - margin.bottom;
   var radius = Math.min(width, height) / 2;
-  // Get the minimum and maximum average prices
+  
   var priceExtent = d3.extent(filteredData, function(d) { return d.averagePrice; });
 
   var color = d3.scaleSequential()
-    .domain(priceExtent)  // Set the domain of the color scale to the minimum and maximum average prices
-    .interpolator(d3.interpolateRgb("green", "red"));  // Interpolate between green and red
+    .domain(priceExtent)  
+    .interpolator(d3.interpolateRgb("green", "red"));  
 
-  // legend
+  // Legend
   var defs = svg.append("defs");
 
   var linearGradient = defs.append("linearGradient")
@@ -85,7 +87,6 @@ function updateGraph(filteredData) {
     .attr("height", 20)
     .style("fill", "url(#linear-gradient)");
 
-  // Define the annotation
   priceExtent[0] = Math.round(priceExtent[0]);
   priceExtent[1] = Math.round(priceExtent[1]);
 
@@ -94,8 +95,8 @@ function updateGraph(filteredData) {
       title: "$" + priceExtent[0] + " to $" + priceExtent[1] + "",
       label: "average per-night cost"    
     },
-    x: width + 20,  // Position the annotation to the right of the legend
-    y: 20,  // Position the annotation above the legend
+    x: width + 20,  
+    y: 20,  
     dy: 40,
     dx: 0
   }];  
@@ -103,7 +104,7 @@ function updateGraph(filteredData) {
   svg.append("g")
     .attr("class", "annotation-group")
     .call(d3.annotation().annotations(annotations));  
-  // legend
+  // Legend
 
   var arc = d3.arc()
     .outerRadius(radius - 10)
@@ -118,7 +119,7 @@ function updateGraph(filteredData) {
     .value(function(d) { return d.count; });
 
   var g = svg.append("g")
-    .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")"); // Adjust transform
+    .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")"); 
 
   var arcData = pie(data);
 
@@ -149,38 +150,37 @@ function updateGraph(filteredData) {
       var c = labelArc.centroid(d);
       return "translate(" + c[0] + "," + c[1] + ") rotate(" + computeTextRotation(d) + ")";
     })
-    .attr("dx", function(d) { return computeTextDx(d); }) // Adjust dx based on angle
+    .attr("dx", function(d) { return computeTextDx(d); }) 
     .attr("dy", "0.35em")
-    .attr("text-anchor", function(d) { return computeTextAnchor(d); }) // Adjust text-anchor based on angle
+    .attr("text-anchor", function(d) { return computeTextAnchor(d); }) 
     .text(function(d) { return d.data.key; });
   
   function computeTextRotation(d) {
-    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  // Compute angle in degrees
-    return (angle < 180) ? angle - 90 : angle + 90;  // Offset angle by 90 degrees
+    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;
+    return (angle < 180) ? angle - 90 : angle + 90;  
   }
   
   function computeTextDx(d) {
-    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  // Compute angle in degrees
-    return (angle < 180) ? "-1.2em" : "1.2em";  // Move text to left for left half of pie
+    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  
+    return (angle < 180) ? "-1.2em" : "1.2em";  
   }
   
   function computeTextAnchor(d) {
-    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;  // Compute angle in degrees
-    return (angle < 180) ? "start" : "end";  // Right-justify text for left half of pie
+    var angle = (d.startAngle + d.endAngle) / Math.PI * 90;
+    return (angle < 180) ? "start" : "end";
   }
 
 // Find the data for Laurelton
 var laureltonData = arcData.find(function(d) { return d.data.key === "Laurelton"; });
 
-// Create the annotation for Laurelton
 if (laureltonData) {  // Ensure laureltonData is defined
   const laureltonAnnotation = {
     note: {
       title: "Laurel-TONS of money",
       label: "Average annual household income here is $115,722.",
     },
-    x: labelArc.centroid(laureltonData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Laurelton slice
-    y: labelArc.centroid(laureltonData)[1] + height / 2 + margin.top,  // Position the annotation at the centroid of the Laurelton slice
+    x: labelArc.centroid(laureltonData)[0] + width / 2 + margin.left,
+    y: labelArc.centroid(laureltonData)[1] + height / 2 + margin.top, 
     dy: -80,
     dx: -5
   };
@@ -193,5 +193,12 @@ svg.append("g")
   .call(d3.annotation().annotations(annotations));
 
 }
+
+// Add listener for dropdown menu selection change event
+d3.select("#room-type-select").on("change", function() {
+  var selectedRoomType = d3.select(this).node().value;
+
+  init(selectedRoomType);
+});
 
 init();

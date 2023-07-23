@@ -8,7 +8,6 @@
 </head>
 <body>
   <h1 id="header">Average NYC Airbnb Prices Over Time</h1> 
-  <p> data from kaggle: "New York City Airbnb 2023, Public Data" updated for 2014 - 2023</p>
     <button class="restart" onclick="window.location.href='index.html'">Back to start</button>
   <p> Filter by room type: 
   <select id="room-type-select">
@@ -25,28 +24,27 @@
     <p><span class="legend-key" style="background-color: green;"></span>NYC average per-night rent</p>
     <p><span class="legend-key" style="background-color: red;"></span>NYC average hotel price</p>
   </div>
-  
+  <p style="font-size: 12px;">data from kaggle: "New York City Airbnb 2023, Public Data" updated for 2014 - 2023</p>
+
 </body>
 
 <div id="tooltip"></div>
 
 <div class="navbar">
-  <a href="index.html" class="">Home</a>
+  <a href="index.html" class="">Slide 1</a>
   <a href="drilled-down-1.html" class="drilldown1 disable-click">Drill Down 1</a>
 
-  <a href="index-2.html" class="">Home 2</a>
+  <a href="index-2.html" class="">Slide 2</a>
   <a href="drilled-down-2.html" class="drilldown2 disable-click">Drill Down 2</a>
 
-  <a href="index-3.html" class="home3 current">Home 3</a>
+  <a href="index-3.html" class="home3 current">Slide 3</a>
 </div>
 
 <script>
-// Get all elements with class="disable-click" and loop over them
+// Disable click on all links with class="disable-click"
 var disableClickLinks = document.querySelectorAll('.disable-click');
 for (var i = 0; i < disableClickLinks.length; i++) {
-  // Add an event listener to each link
   disableClickLinks[i].addEventListener('click', function(event) {
-    // Prevent the default click action
     event.preventDefault();
   });
 }

@@ -1,4 +1,3 @@
-// script.js
 let data;
 const averageHotelPrices = { 2014: 171.00, 2015: 174.60, 2016: 170.21, 2017: 153.73, 2018: 132.23, 2019: 114.93, 2020: 90.92, 2021: 139.84, 2022: 148.83, 2023: 212.00, };
 const averageRentNYC = { 2014: 3700, 2015: 3805, 2016: 4215, 2017: 4330, 2018: 4432, 2019: 4636, 2020: 4360, 2021: 4000, 2022: 3657, 2023: 3657,};
@@ -11,7 +10,6 @@ function parseData() {
 
   // Load data
   d3.csv("NYC-Airbnb-2023.csv").then(function(data) {
-    // Parse date and convert price to number
     var parseTime = d3.timeParse("%Y-%m-%d");
 
     // First filter: Ensure that neither last_review nor price are missing and the year is not before 2014
@@ -26,7 +24,7 @@ function parseData() {
         return d.room_type === selectedRoomType;
       });
     }
-    console.log(data.slice(0,10));  // Print out the first 10 entries
+    // console.log(data.slice(0,10));  
     data.forEach(function(d) {
       d.last_review = parseTime(d.last_review);
       d.price = +d.price;
@@ -41,7 +39,6 @@ function parseData() {
       }; })
       .entries(data);
 
-    // Convert the nested data to match the expected format in createGraph
     nestedData = nestedData.map(function(d) {
       return {
         key: d.key,
@@ -50,7 +47,7 @@ function parseData() {
       };
     });
 
-    // Sort the data by year (key)
+    // Sort the data by year (key) (lol)
     nestedData.sort(function(a, b) {
       return a.key - b.key;
     });
@@ -61,22 +58,18 @@ function parseData() {
 
 
 function createGraph(data, selectedRoomType) {
-  // Clear any existing graph
   d3.select("svg").remove();
 
-  // Define margins
   var margin = {top: 20, right: 20, bottom: 30, left: 50},
       width = 700 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
   
-  // Create SVG element with margins
   var svg = d3.select("#graph").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Create scales
   var xScale = d3.scaleTime()
     .domain(d3.extent(data, function(d) { return new Date(+d.key, 0, 1); }))
     .range([0, width]);
@@ -85,12 +78,10 @@ function createGraph(data, selectedRoomType) {
     .domain([80, d3.max(data, function(d) { return d.value; })])
     .range([height, 0]);
   
-  // Create line generator
   var line = d3.line()
-    .x(function(d) { return xScale(new Date(+d.key, 0, 1)); })  // Convert year back to date object for xScale
+    .x(function(d) { return xScale(new Date(+d.key, 0, 1)); })  
     .y(function(d) { return yScale(d.value); });
 
-  // Append path
   svg.append("path")
     .datum(data)
     .attr("fill", "none")
@@ -163,7 +154,7 @@ function createGraph(data, selectedRoomType) {
       tooltip.style("opacity", 0);
     });
     
-  // Add a note for the y-axis
+  // Add a label for the y-axis
   svg.append("text")
     .attr("transform", "rotate(-90)")
     .attr("y", 0 - margin.left)
