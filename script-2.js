@@ -163,7 +163,7 @@ var queensData = arcData.find(function(d) { return d.data.key === "Queens"; });
 if (queensData) {  // Ensure queensData is defined
   const queensAnnotation = {
     note: {
-      title: "No Tourists.",
+      title: "\"No Tourists\"",
       label: "On average, month-long stays in Queens are more expenive than week-long.",
     },
     x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  // Position the annotation at the centroid of the Queens slice

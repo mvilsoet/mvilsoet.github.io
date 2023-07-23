@@ -7,11 +7,25 @@
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <h1>almost done :)</h1> 
-  <p> p</p>
-  <h2></h2> 
-  <svg width="700" height="700"></svg>
+  <h1 id="header">Average NYC Airbnb Prices Over Time</h1> 
+  <p> data from kaggle: "New York City Airbnb 2023, Public Data" updated for 2014 - 2023</p>
+    <button class="restart" onclick="window.location.href='index.html'">Back to start</button>
+  <p> Filter by room type: 
+  <select id="room-type-select">
+    <option value="both">All room types</option>
+    <option value="Private room">Private room</option>
+    <option value="Entire home/apt">Entire home/apt</option>
+  </select> </p>
+  <div id="graph">  
+    <svg width="700" height="700"></svg> 
+  </div>
   <script src="script-3.js"></script>
+  <div id="legend">
+    <p><span class="legend-key" style="background-color: black;"></span>NYC average Airbnb price</p>
+    <p><span class="legend-key" style="background-color: green;"></span>NYC average per-night rent</p>
+    <p><span class="legend-key" style="background-color: red;"></span>NYC average hotel price</p>
+  </div>
+  
 </body>
 
 <div id="tooltip"></div>

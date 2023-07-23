@@ -64,3 +64,37 @@
   background: #ddd;
   color: black;
 }
+
+#legend {
+  margin-top: 20px;
+}
+
+.legend-key {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.next_slide {
+  position: absolute;
+  top: 0;
+  left: 0;  
+  background: url('rightarrow.png') no-repeat;
+  background-size: contain;  
+  color: black;
+  /* Add additional styles as needed */
+  border: 1px solid black; /* Remove button border */
+  text-align: center; /* Center the text */
+  padding: 0px 40px; /* Add some padding */
+  cursor: pointer; /* Change cursor on hover */
+  font-size: 11px; /* Set font size */
+  /* Set width and height of the button to match the image dimensions */
+  width: 80px; 
+  height: 40px;
+}
+
+.svg-container {
+  position: relative;
+}
