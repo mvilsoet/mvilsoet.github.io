@@ -95,6 +95,12 @@
   height: 40px;
 }
 
+.drilldown-instruction {
+  font-size: 14px;
+  color: red;
+  margin-top: 0px;
+}
+
 .svg-container {
   position: relative;
 }

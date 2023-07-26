@@ -138,7 +138,7 @@ function updateGraph(filteredData) {
                    + (d.data.count / total * 100).toFixed(2) + "%");
     })
     .on("mousemove", function(d) {
-      tooltip.style("left", (d3.event.pageX + 10) + "px")
+      tooltip.style("left", (d3.event.pageX + 15) + "px")
              .style("top", (d3.event.pageY - 10) + "px");
     })
     .on("mouseout", function(d) {
@@ -170,28 +170,70 @@ function updateGraph(filteredData) {
     return (angle < 180) ? "start" : "end";
   }
 
-// Find the data for Laurelton
-var laureltonData = arcData.find(function(d) { return d.data.key === "Laurelton"; });
+// Add annotations for each neighborhood
+var FlushingData = arcData.find(function(d) { return d.data.key === "Flushing"; });
+var FordhamData = arcData.find(function(d) { return d.data.key === "Fordham"; });
+var CrownHeightsData = arcData.find(function(d) { return d.data.key === "Crown Heights"; });
+var WashingtonHeightsData = arcData.find(function(d) { return d.data.key === "Washington Heights"; });
 
-if (laureltonData) {  // Ensure laureltonData is defined
-  const laureltonAnnotation = {
+if (FlushingData) {
+  const flushingAnnotation = {
     note: {
-      title: "Laurel-TONS of money",
-      label: "Average annual household income here is $115,722.",
+      title: "Recommendation",
+      label: "Low crime rate and waterfront views.",
     },
-    x: labelArc.centroid(laureltonData)[0] + width / 2 + margin.left,
-    y: labelArc.centroid(laureltonData)[1] + height / 2 + margin.top, 
-    dy: -80,
-    dx: -5
+    x: labelArc.centroid(FlushingData)[0] + width / 2 + margin.left,
+    y: labelArc.centroid(FlushingData)[1] + height / 2 + margin.top, 
+    dy: 15,
+    dx: 50
   };
-  annotations.push(laureltonAnnotation);
+  annotations.push(flushingAnnotation);
 }
 
-// Add the annotations to the SVG
+if (FordhamData) {
+  const fordhamAnnotation = {
+    note: {
+      title: "Recommendation",
+      label: "Low price and next to the Botanical Gardens.",
+    },
+    x: labelArc.centroid(FordhamData)[0] + width / 2 + margin.left,
+    y: labelArc.centroid(FordhamData)[1] + height / 2 + margin.top, 
+    dy: 15,
+    dx: 50
+  };
+  annotations.push(fordhamAnnotation);
+}
+
+if (CrownHeightsData) {
+  const crownHeightsAnnotation = {
+    note: {
+      title: "Don't be fooled!",
+      label: "Low price but high crime rate.",
+    },
+    x: labelArc.centroid(CrownHeightsData)[0] + width / 2 + margin.left,
+    y: labelArc.centroid(CrownHeightsData)[1] + height / 2 + margin.top, 
+    dy: 40,
+    dx: -60
+  };
+  annotations.push(crownHeightsAnnotation);
+}
+
+if (WashingtonHeightsData) {
+  const washingtonHeightsAnnotation = {
+    note: {
+      title: "Recommendation",
+      label: "Lower prices, Hudson River view.",
+    },
+    x: labelArc.centroid(WashingtonHeightsData)[0] + width / 2 + margin.left,
+    y: labelArc.centroid(WashingtonHeightsData)[1] + height / 2 + margin.top, 
+    dy: 40,
+    dx: -60
+  };
+  annotations.push(washingtonHeightsAnnotation);
+}
 svg.append("g")
   .attr("class", "annotation-group")
   .call(d3.annotation().annotations(annotations));
-
 }
 
 // Add listener for dropdown menu selection change event

@@ -13,6 +13,10 @@ async function init(roomType="both") {
       return d.room_type === roomType;
     });
   }
+  data = data.filter(function(d) {
+    return d["neighbourhood_group"] != 'Staten Island'; //fck staten island, messin up my data yo
+  });
+
   // Count the occurrences of each unique countProp and compute total price
   var counts = {}, totalPrices = {};
   data.forEach(function(d) {
@@ -78,7 +82,7 @@ function updateGraph(data) {
         .html("<strong>" + d.data.key + "</strong><br><strong>Average nightly price:</strong> $" 
               + d.data.averagePrice.toFixed(2) + "<br><strong>Percentage of total listings:</strong> " 
               + (d.data.count / total * 100).toFixed(2) + "%<br><i>Click to drill down</i>")
-        .style("left", (d3.event.pageX + 10) + "px")
+        .style("left", (d3.event.pageX + 15) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
     })
     .on("mouseout", function(d) {  // Hide tooltip on mouseout
@@ -170,7 +174,21 @@ function updateGraph(data) {
     };
     annotations.push(queensAnnotation);
   }
+  var queensData = arcData.find(function(d) { return d.data.key === "Queens"; });
 
+  if (queensData) {  
+    const queensAnnotation = {
+      note: {
+        title: "\"No Tourists\"",
+        label: "On average, month-long stays in Queens are more expenive than week-long.",
+      },
+      x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  
+      y: labelArc.centroid(queensData)[1] + height / 2 + margin.top,  
+      dy: -20,
+      dx: -40
+    };
+    annotations.push(queensAnnotation);
+  }
   svg.append("g")
     .attr("class", "annotation-group")
     .call(d3.annotation().annotations(annotations));

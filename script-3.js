@@ -169,6 +169,38 @@ function createGraph(data, selectedRoomType) {
                         (height + margin.top + 10) + ")")
     .style("text-anchor", "middle")
     .text("Year");
+  // Create an annotations array
+  var annotations = 
+  [
+    {
+    note: {
+      label: "Resurgence of tourism (profit) post-pandemic.",
+      title: "Scalpers!"
+    },
+    x: xScale(new Date(2022, 0, 1)), // x position
+    y: yScale(data.find(d => d.key == '2022').value), // y position
+    dy: 10,
+    dx: -50
+  },
+  {
+      note: {
+        label: "Prices are recovering in 2023!",
+        title: "Looking up..."
+      },
+      x: xScale(new Date(2023, 0, 1)), // x position
+      y: yScale(data.find(d => d.key == '2023').value), // y position
+      dy: 0,
+      dx: -90
+    }
+  ];
+
+  // Create annotation
+  var makeAnnotations = d3.annotation()
+    .annotations(annotations);
+
+  svg.append("g")
+    .attr("class", "annotation-group")
+    .call(makeAnnotations);
 
 }
 // Listen for changes to the dropdown selection

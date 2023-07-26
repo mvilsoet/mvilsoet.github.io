@@ -13,6 +13,9 @@ async function init(roomType="both") {
       return d.room_type === roomType;
     });
   }
+  data = data.filter(function(d) {
+    return d["neighbourhood_group"] != 'Staten Island';  //fck staten island, messin up my data yo
+  });
 
   // Count the occurrences of each unique countProp and compute total price
   var counts = {}, totalPrices = {};
@@ -81,7 +84,7 @@ function updateGraph(data) {
         .html("<strong>" + d.data.key + "</strong><br><strong>Average nightly price:</strong> $" 
               + d.data.averagePrice.toFixed(2) + "<br><strong>Percentage of total listings:</strong> " 
               + d.data.percentage.toFixed(2) + "%<br><i>Click to drill down</i>")
-        .style("left", (d3.event.pageX) + "px")
+        .style("left", (d3.event.pageX + 15) + "px") 
         .style("top", (d3.event.pageY - 28) + "px");
     })    
     .on("mouseout", function(d) {  // Hide tooltip on mouseout
@@ -166,7 +169,7 @@ function updateGraph(data) {
     const queensAnnotation = {
       note: {
         title: "Beat the average!",
-        label: "The avg hotel price in NYC is $175.",
+        label: "The avg Airbnb price in NYC 2023 is $167.",
       },
       x: labelArc.centroid(queensData)[0] + width / 2 + margin.left, 
       y: labelArc.centroid(queensData)[1] + height / 2 + margin.top, 
