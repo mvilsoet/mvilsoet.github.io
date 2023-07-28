@@ -60,7 +60,7 @@ function parseData() {
 function createGraph(data, selectedRoomType) {
   d3.select("svg").remove();
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 50},
+  var margin = {top: 50, right: 20, bottom: 70, left: 50},
       width = 700 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
   

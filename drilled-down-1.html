@@ -6,7 +6,8 @@
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <h1 id="header">Number and Cost of Airbnb Listings in NYC ( week-long or less )</h1> 
+  <h1>Where can I go to maximize "bang for my buck" in NYC with Airbnb?</h1> 
+  <h2 id="header">Number (arc) and Cost (color) of Airbnb Listings in NYC for stays less than 1 week</h2> 
   <p> Filter by room type: 
     <select id="room-type-select">
       <option value="both">All room types</option>
@@ -47,7 +48,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const neighbourhoodGroup = urlParams.get('neighbourhood_group');
 
-    document.getElementById('header').innerText = 'Number and Cost of Airbnb Listings in ' + neighbourhoodGroup + ' ( week-long or less )';
+    document.getElementById('header').innerText = 'Number (arc) and Cost (color) of Airbnb Listings in ' + neighbourhoodGroup + ' for stays less than 1 week';
   </script>
 
 </html>

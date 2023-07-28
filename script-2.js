@@ -169,23 +169,8 @@ function updateGraph(data) {
       },
       x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  
       y: labelArc.centroid(queensData)[1] + height / 2 + margin.top,  
-      dy: -20,
-      dx: -40
-    };
-    annotations.push(queensAnnotation);
-  }
-  var queensData = arcData.find(function(d) { return d.data.key === "Queens"; });
-
-  if (queensData) {  
-    const queensAnnotation = {
-      note: {
-        title: "\"No Tourists\"",
-        label: "On average, month-long stays in Queens are more expenive than week-long.",
-      },
-      x: labelArc.centroid(queensData)[0] + width / 2 + margin.left,  
-      y: labelArc.centroid(queensData)[1] + height / 2 + margin.top,  
-      dy: -20,
-      dx: -40
+      dy: 0,
+      dx: -100
     };
     annotations.push(queensAnnotation);
   }

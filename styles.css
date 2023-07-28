@@ -80,7 +80,7 @@
 .next_slide {
   position: absolute;
   top: 0;
-  left: 0;  
+  left: 80px;  
   background: url('rightarrow.png') no-repeat;
   background-size: contain;  
   color: black;
@@ -95,6 +95,41 @@
   height: 40px;
 }
 
+.previous_slide {
+  position: absolute;
+  top: 0;
+  left: 0;  
+  background: url('leftarrow.png') no-repeat;
+  background-size: contain;  
+  color: black;
+  /* Add additional styles as needed */
+  border: 1px solid black; /* Remove button border */
+  text-align: center; /* Center the text */
+  padding: 0px 40px; /* Add some padding */
+  cursor: pointer; /* Change cursor on hover */
+  font-size: 11px; /* Set font size */
+  /* Set width and height of the button to match the image dimensions */
+  width: 80px; 
+  height: 40px;
+}
+
+.previous_slide_2 {
+  position: absolute;
+  top: 192px;
+  left: 8px;  
+  background: url('leftarrow.png') no-repeat;
+  background-size: contain;  
+  color: black;
+  /* Add additional styles as needed */
+  border: 1px solid black; /* Remove button border */
+  text-align: center; /* Center the text */
+  padding: 0px 40px; /* Add some padding */
+  cursor: pointer; /* Change cursor on hover */
+  font-size: 11px; /* Set font size */
+  /* Set width and height of the button to match the image dimensions */
+  width: 80px; 
+  height: 40px;
+}
 .drilldown-instruction {
   font-size: 14px;
   color: red;
